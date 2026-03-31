@@ -1,32 +1,35 @@
 name: Upload Website
 
 on:
- push:
-   branches:
-     - main
+  push:
+    branches:
+      - main
 
 jobs:
- Deploy:
-   runs-on: ubuntu-latest
-   steps:
-     - name: Checkout
-       uses: actions/checkout@v4
+  Deploy:
+    runs-on: ubuntu-latest
 
-     - name: Setup node
-       uses: actions/setup-node@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-     - name: Install dependencies
-       run: npm install
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-     - name: Build static file
-       run: npm run build
+      - name: Install dependencies
+        run: npm install
 
-     - name: Configure AWS Credentials
-       uses: aws-actions/configure-aws-credentials@v1
-       with:
-         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         aws-region: us-east-1
+      - name: Build static file
+        run: npm run build
 
-     - name: Deploy static site to S3 bucket
-       run: aws s3 sync ./build s3://assign5-s3-action-github
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy static site to S3 bucket
+        run: aws s3 sync ./build s3://assign5-s3-action-github
